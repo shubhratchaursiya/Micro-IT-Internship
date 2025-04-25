@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Matrix Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: monospace;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .calculator {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      width: 300px;
+      margin: auto;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    #result {
+      width: 100%;
+      height: 40px;
+      font-size: 1.5em;
+      text-align: right;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 15px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      background: #e0e0e0;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #d3d3d3;
+    }
+
+    .btn.operator {
+      background: #f9a825;
+      color: white;
+    }
+
+    .btn.equal {
+      background: #43a047;
+      color: white;
+      grid-column: span 2;
+    }
+
+    .btn.clear {
+      background: #e53935;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrixCanvas"></canvas>
+
+<div class="calculator">
+  <input type="text" id="result" disabled>
+  <div class="buttons">
+    <button class="btn" onclick="appendNumber('7')">7</button>
+    <button class="btn" onclick="appendNumber('8')">8</button>
+    <button class="btn" onclick="appendNumber('9')">9</button>
+    <button class="btn operator" onclick="appendOperator('/')">÷</button>
+
+    <button class="btn" onclick="appendNumber('4')">4</button>
+    <button class="btn" onclick="appendNumber('5')">5</button>
+    <button class="btn" onclick="appendNumber('6')">6</button>
+    <button class="btn operator" onclick="appendOperator('*')">×</button>
+
+    <button class="btn" onclick="appendNumber('1')">1</button>
+    <button class="btn" onclick="appendNumber('2')">2</button>
+    <button class="btn" onclick="appendNumber('3')">3</button>
+    <button class="btn operator" onclick="appendOperator('-')">−</button>
+
+    <button class="btn" onclick="appendNumber('0')">0</button>
+    <button class="btn" onclick="appendNumber('.')">.</button>
+    <button class="btn equal" onclick="calculate()">=</button>
+    <button class="btn operator" onclick="appendOperator('+')">+</button>
+
+    <button class="btn clear" onclick="clearResult()">C</button>
+  </div>
+</div>
+
+<script>
+  let expression = '';
+
+  function appendNumber(num) {
+    expression += num;
+    document.getElementById('result').value = expression;
+  }
+
+  function appendOperator(operator) {
+    if (expression.length > 0 && !isNaN(expression[expression.length - 1])) {
+      expression += operator;
+      document.getElementById('result').value = expression;
+    }
+  }
+
+  function calculate() {
+    try {
+      const result = eval(expression);
+      document.getElementById('result').value = result;
+      expression = result.toString();
+    } catch (e) {
+      document.getElementById('result').value = 'Error';
+      expression = '';
+    }
+  }
+
+  function clearResult() {
+    expression = '';
+    document.getElementById('result').value = '';
+  }
+
+  const canvas = document.getElementById("matrixCanvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  const letters = "01";
+  const fontSize = 16;
+  const columns = canvas.width / fontSize;
+  const drops = Array(Math.floor(columns)).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#0F0";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters[Math.floor(Math.random() * letters.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+
+      drops[i]++;
+    }
+  }
+
+  setInterval(drawMatrix, 50);
+</script>
+
+</body>
+</html>
